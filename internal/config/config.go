@@ -7,19 +7,19 @@ import (
 )
 
 type Config struct {
-	dbURL string `json:"db_url"`,
-	currentUser string `json:"current_user_name"`
+	DbURL string `json:"db_url"`
+	CurrentUser string `json:"current_user_name"`
 }
 
-func (c Config) SetUser(name String) err {
-	c.currentUser = name
-	home := os.UserHomeDir()
-	url := fmt.Sprintf(%s"/.gatorconfig.json", home)
+func (c Config) SetUser(name string) error {
+	c.CurrentUser = name
+	home, err := os.UserHomeDir()
+	url := fmt.Sprintf("%s/.gatorconfig.json", home)
 	data, err := json.Marshal(c)
 	if err != nil {
 		return err
 	}
-	err := os.WriteFile(url, data)
+	err = os.WriteFile(url, data, 0644)
 	if err != nil {
 		return err
 	}
@@ -27,16 +27,16 @@ func (c Config) SetUser(name String) err {
 }
 
 func Read() (Config, error){
-	home := os.UserHomeDir()
-	url := fmt.Sprintf(%s"/.gatorconfig.json", home)
+	home, err := os.UserHomeDir()
+	url := fmt.Sprintf("%s/.gatorconfig.json", home)
 	data, err := os.ReadFile(url)
 	var config Config
 	if err != nil {
 		return config, err
 	}
-	st, err := json.Unmarshal(data, &config)
+	err = json.Unmarshal(data, &config)
 	if err != nil {
-		return Config{}{}, err
+		return config, err
 	}
 	return config, nil
 }
